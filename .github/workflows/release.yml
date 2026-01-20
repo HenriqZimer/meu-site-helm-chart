@@ -1,0 +1,132 @@
+name: Release Chart
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'chart/Chart.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.0
+
+      - name: Get Chart Version
+        id: chart_version
+        run: |
+          VERSION=$(grep '^version:' chart/Chart.yaml | awk '{print $2}')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "📦 Chart version: $VERSION"
+
+      - name: Check if Tag Exists
+        id: check_tag
+        run: |
+          if git rev-parse "v${{ steps.chart_version.outputs.version }}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "⚠️ Tag v${{ steps.chart_version.outputs.version }} already exists - skipping release"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "✅ Tag v${{ steps.chart_version.outputs.version }} does not exist - proceeding with release"
+          fi
+
+      - name: Check if gh-pages Branch Exists
+        id: check-branch
+        if: steps.check_tag.outputs.exists == 'false'
+        run: |
+          if git ls-remote --heads origin gh-pages | grep gh-pages > /dev/null; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "✅ gh-pages branch exists"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "📝 gh-pages branch does not exist"
+          fi
+
+      - name: Create gh-pages Branch
+        if: steps.check_tag.outputs.exists == 'false' && steps.check-branch.outputs.exists == 'false'
+        run: |
+          git checkout --orphan gh-pages
+          git reset --hard
+          git commit --allow-empty -m "Initialize gh-pages branch"
+          git push origin gh-pages
+          git checkout main
+          echo "✅ Created gh-pages branch"
+
+      - name: Package Helm Chart
+        if: steps.check_tag.outputs.exists == 'false'
+        run: |
+          mkdir -p .cr-release-packages
+          helm package chart/ -d .cr-release-packages
+          echo "✅ Chart packaged successfully"
+
+      - name: Create GitHub Release
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.chart_version.outputs.version }}
+          name: Release v${{ steps.chart_version.outputs.version }}
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+          files: |
+            .cr-release-packages/*.tgz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push Chart to GHCR
+        if: steps.check_tag.outputs.exists == 'false'
+        run: |
+          helm push .cr-release-packages/*.tgz oci://ghcr.io/${{ github.repository_owner }}/charts
+          echo "✅ Chart pushed to GHCR: ghcr.io/${{ github.repository_owner }}/charts"
+
+      - name: Run chart-releaser
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: helm/chart-releaser-action@v1.6.0
+        with:
+          charts_dir: .
+          config: cr.yaml
+          skip_existing: true
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Release Summary
+        if: steps.check_tag.outputs.exists == 'false'
+        run: |
+          echo "🎉 Release v${{ steps.chart_version.outputs.version }} completed successfully!"
+          echo ""
+          echo "📦 Published to:"
+          echo "  - GitHub Releases: https://github.com/${{ github.repository }}/releases/tag/v${{ steps.chart_version.outputs.version }}"
+          echo "  - GitHub Container Registry: ghcr.io/${{ github.repository_owner }}/charts"
+          echo "  - Helm Repository: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+          echo ""
+          echo "📝 To use this chart:"
+          echo "  helm repo add myrepo https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+          echo "  helm install myapp myrepo/fullstack-app --version ${{ steps.chart_version.outputs.version }}"

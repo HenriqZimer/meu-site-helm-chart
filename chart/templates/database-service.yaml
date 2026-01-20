@@ -1,0 +1,26 @@
+{{- if .Values.database.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "meu-site.fullname" . }}-database
+  labels:
+    {{- include "meu-site.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+    {{- with .Values.database.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.database.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.database.service.type }}
+  ports:
+    - port: {{ .Values.database.service.port }}
+      targetPort: {{ .Values.database.service.portName }}
+      protocol: TCP
+      name: {{ .Values.database.service.portName }}
+  selector:
+    {{- include "meu-site.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+{{- end }}

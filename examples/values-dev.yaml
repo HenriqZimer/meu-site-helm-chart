@@ -1,0 +1,67 @@
+# Example values for development environment
+# Use: helm install meu-site chart/ -f examples/values-dev.yaml
+
+# Enable internal secrets for development
+secrets:
+  enabled: true
+  data:
+    MONGO_INITDB_ROOT_USERNAME: "devadmin"
+    MONGO_INITDB_ROOT_PASSWORD: "devpassword123"
+    MONGO_INITDB_DATABASE: "meu_site_dev"
+    MONGODB_URI: "mongodb://devadmin:devpassword123@meu-site-database:27017/meu_site_dev?authSource=admin"
+
+frontend:
+  replicaCount: 1  # Reduced for dev
+  image:
+    # For Docker Hub use: docker.io/username/meu-site-frontend
+    repository: harbor.henriqzimer.com.br/meu-site/meu-site-frontend
+    tag: dev-latest
+    pullPolicy: IfNotPresent  # Changed for dev
+  env:
+    - name: TZ
+      value: "America/Sao_Paulo"
+
+backend:
+  replicaCount: 1
+  image:
+    # For Docker Hub use: docker.io/username/meu-site-backend
+    repository: harbor.henriqzimer.com.br/meu-site/meu-site-backend
+    tag: dev-latest
+    pullPolicy: IfNotPresent
+  env:
+    - name: TZ
+      value: "America/Sao_Paulo"
+    - name: NODE_ENV
+      value: "development"
+
+database:
+  enabled: true
+  replicaCount: 1
+  image:
+    pullPolicy: IfNotPresent
+  persistence:
+    enabled: true
+    size: 5Gi  # Smaller size for dev
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  hosts:
+    - host: dev.henriqzimer.local
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: meu-site-frontend
+              port: 80
+        - path: /api
+          pathType: Prefix
+          backend:
+            service:
+              name: meu-site-backend
+              port: 5000
+  tls: []
+

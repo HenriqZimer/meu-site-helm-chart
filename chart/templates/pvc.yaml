@@ -1,0 +1,22 @@
+{{- if and .Values.database.enabled .Values.database.persistence.enabled (eq .Values.database.persistence.type "pvc") (not .Values.database.persistence.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.database.persistence.pvcName | default (printf "%s-db-pvc" (include "meu-site.fullname" .)) }}
+  labels:
+    {{- include "meu-site.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+  {{- with .Values.database.persistence.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    - {{ .Values.database.persistence.accessMode | default "ReadWriteOnce" }}
+  resources:
+    requests:
+      storage: {{ .Values.database.persistence.size | default "8Gi" }}
+  {{- if .Values.database.persistence.storageClass }}
+  storageClassName: {{ .Values.database.persistence.storageClass }}
+  {{- end }}
+{{- end }}

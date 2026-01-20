@@ -33,15 +33,6 @@ helm install myapp meu-site-helm/meu-site --namespace myapp --create-namespace
 helm install myapp meu-site-helm/meu-site --version 1.0.0
 ```
 
-### Install from Source
-
-```bash
-# Clone and install from source
-git clone https://github.com/HenriqZimer/meu-site-helm-chart.git
-cd meu-site-helm-chart
-helm install myapp ./chart
-```
-
 ## Configuration
 
 ### Main Parameters

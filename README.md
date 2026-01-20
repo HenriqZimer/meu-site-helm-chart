@@ -27,11 +27,28 @@ This repository contains a Helm chart for deploying a complete fullstack applica
 - Helm 3.x installed
 - kubectl configured
 
-### Install Chart
+### Install from Helm Repository
+
+```bash
+# Add the Helm repository
+helm repo add meu-site-helm https://henriqzimer.github.io/meu-site-helm-chart/
+helm repo update
+
+# Install the chart
+helm install myapp meu-site-helm/meu-site
+
+# Install with custom values
+helm install myapp meu-site-helm/meu-site -f custom-values.yaml
+
+# Install specific version
+helm install myapp meu-site-helm/meu-site --version 1.0.0
+```
+
+### Install from Source
 
 ```bash
 # Clone the repository
-git clone <your-repository>
+git clone https://github.com/HenriqZimer/meu-site-helm-chart.git
 cd meu-site-helm-chart
 
 # Install with default values
@@ -39,6 +56,22 @@ helm install myapp chart/
 
 # Or install with custom values
 helm install myapp chart/ -f custom-values.yaml
+```
+
+## Helm Repository
+
+This chart is available as a Helm repository hosted on GitHub Pages:
+
+```bash
+# Add repository
+helm repo add meu-site-helm https://henriqzimer.github.io/meu-site-helm-chart/
+
+# List available charts
+helm search repo meu-site-helm
+
+# Show chart information
+helm show chart meu-site-helm/meu-site
+helm show values meu-site-helm/meu-site
 ```
 
 ## Configuration
@@ -49,10 +82,13 @@ The main configuration is done through the `values.yaml` file. See the file for 
 
 ```bash
 # Install in specific namespace
-helm install myapp chart/ --namespace myapp --create-namespace
+helm install myapp meu-site-helm/meu-site --namespace myapp --create-namespace
 
 # Upgrade release
-helm upgrade myapp chart/
+helm upgrade myapp meu-site-helm/meu-site
+
+# Upgrade with custom values
+helm upgrade myapp meu-site-helm/meu-site -f custom-values.yaml
 
 # Uninstall
 helm uninstall myapp

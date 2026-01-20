@@ -13,21 +13,33 @@ Production-ready Helm chart for deploying fullstack applications on Kubernetes -
 - Helm 3.x
 - PV provisioner support (for database persistence)
 
-### Install from Local Repository
+### Install from Helm Repository (Recommended)
 
 ```bash
-# Install directly from local repository
-helm install myapp ./chart
+# Add the Helm repository
+helm repo add meu-site-helm https://henriqzimer.github.io/meu-site-helm-chart/
+helm repo update
+
+# Install the chart
+helm install myapp meu-site-helm/meu-site
+
+# Install with custom values
+helm install myapp meu-site-helm/meu-site -f custom-values.yaml
+
+# Install in specific namespace
+helm install myapp meu-site-helm/meu-site --namespace myapp --create-namespace
+
+# Install specific version
+helm install myapp meu-site-helm/meu-site --version 1.0.0
 ```
 
-### Custom Installation
+### Install from Source
 
 ```bash
-# With custom values
-helm install myapp ./chart -f custom-values.yaml
-
-# In specific namespace
-helm install myapp ./chart --namespace myapp --create-namespace
+# Clone and install from source
+git clone https://github.com/HenriqZimer/meu-site-helm-chart.git
+cd meu-site-helm-chart
+helm install myapp ./chart
 ```
 
 ## Configuration

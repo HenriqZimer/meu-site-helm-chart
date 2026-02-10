@@ -1,0 +1,157 @@
+# -------------------------------------------------------------------------
+# VALUES PARA AMBIENTE DE CI/TESTES (Pipeline)
+# Otimizado para execução rápida, baixo consumo e dados voláteis.
+# -------------------------------------------------------------------------
+
+nameOverride: ""
+fullnameOverride: ""
+
+# Em CI, não precisamos de histórico de rollback extenso
+revisionHistoryLimit: 1
+
+# Segredos geralmente não são criados via Helm no CI se já existirem no Namespace
+# ou usamos valores default para testes não sensíveis.
+secrets:
+  enabled: true
+  name: meu-site-credentials-ci
+  data:
+    # Credenciais padrão para ambiente de teste (não usar em PROD!)
+    MONGO_INITDB_ROOT_USERNAME: "ci-user"
+    MONGO_INITDB_ROOT_PASSWORD: "ci-password"
+    MONGO_INITDB_DATABASE: "portfolio_test"
+    MONGODB_URI: "mongodb://ci-user:ci-password@meu-site-mongodb:27017/portfolio_test?authSource=admin"
+
+# -------------------------------------------------------------------------
+# FRONTEND CONFIG (CI)
+# -------------------------------------------------------------------------
+frontend:
+  replicaCount: 1 # Apenas 1 réplica para economizar recursos no cluster de teste
+  
+  image:
+    repository: docker.io/henriquezimermann/meu-site-frontend
+    tag: "latest" # Será sobrescrito pelo pipeline do Jenkins
+    pullPolicy: IfNotPresent
+
+  # Recursos mínimos para rodar os testes
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+  service:
+    type: ClusterIP
+    port: 3000
+    portName: http
+
+  env:
+    - name: TZ
+      value: "America/Sao_Paulo"
+    - name: NODE_ENV
+      value: "test" # Importante para a aplicação saber que está em teste
+
+# -------------------------------------------------------------------------
+# BACKEND CONFIG (CI)
+# -------------------------------------------------------------------------
+backend:
+  replicaCount: 1
+
+  image:
+    repository: docker.io/henriquezimermann/meu-site-backend
+    tag: "latest" # Será sobrescrito pelo pipeline do Jenkins
+    pullPolicy: IfNotPresent
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+  service:
+    type: ClusterIP
+    port: 5000
+    portName: http
+
+  env:
+    - name: TZ
+      value: "America/Sao_Paulo"
+    - name: NODE_ENV
+      value: "test"
+    # Configurações de Email/Rate Limit relaxadas para teste
+    - name: RATE_LIMIT_TTL
+      value: "60"
+    - name: RATE_LIMIT_MAX
+      value: "1000"
+    - name: SMTP_SECURE
+      value: "false"
+
+  envFrom:
+    - secretRef:
+        name: meu-site-credentials-ci
+
+# -------------------------------------------------------------------------
+# DATABASE CONFIG (CI)
+# -------------------------------------------------------------------------
+database:
+  enabled: true
+  replicaCount: 1
+
+  image:
+    repository: docker.io/mongo
+    tag: "latest"
+    pullPolicy: IfNotPresent
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 512Mi
+
+  service:
+    type: ClusterIP
+    port: 27017
+    portName: mongodb
+
+  env:
+    - name: MONGO_INITDB_DATABASE
+      value: portfolio_test
+    - name: MONGO_INITDB_ROOT_USERNAME
+      value: ci-user
+
+  envFrom:
+    - secretRef:
+        name: meu-site-credentials-ci
+
+  # IMPORTANTE PARA CI: Desabilitar persistência (PVC)
+  # Isso usa 'emptyDir', que é rápido e limpa os dados automaticamente quando o Pod morre.
+  # Evita criar discos órfãos no seu provedor de nuvem a cada teste.
+  persistence:
+    enabled: false 
+    type: emptyDir
+    mountPath: /data/db
+
+# -------------------------------------------------------------------------
+# INGRESS CONFIG (CI)
+# -------------------------------------------------------------------------
+ingress:
+  # Em testes de infra internos (curl no service), o Ingress muitas vezes pode ser desabilitado
+  # a menos que você rode testes E2E externos.
+  enabled: false 
+  className: nginx
+  annotations: {}
+  hosts:
+    - host: ci-test.henriqzimer.local
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: meu-site-frontend
+              port: 3000
+  tls: []

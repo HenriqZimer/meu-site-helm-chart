@@ -19,14 +19,14 @@ secrets:
     MONGO_INITDB_ROOT_USERNAME: "ci-user"
     MONGO_INITDB_ROOT_PASSWORD: "ci-password"
     MONGO_INITDB_DATABASE: "portfolio_test"
-    MONGODB_URI: "mongodb://ci-user:ci-password@meu-site-mongodb:27017/portfolio_test?authSource=admin"
+    MONGODB_URI: "mongodb://ci-user:ci-password@meu-site-frontend-database:27017/portfolio_test?authSource=admin"
 
 # -------------------------------------------------------------------------
 # FRONTEND CONFIG (CI)
 # -------------------------------------------------------------------------
 frontend:
   replicaCount: 1 # Apenas 1 réplica para economizar recursos no cluster de teste
-  
+
   image:
     repository: docker.io/henriquezimermann/meu-site-frontend
     tag: "latest" # Será sobrescrito pelo pipeline do Jenkins
@@ -86,8 +86,8 @@ backend:
       value: "60"
     - name: RATE_LIMIT_MAX
       value: "1000"
-    - name: SMTP_SECURE
-      value: "false"
+    - name: JWT_SECRET
+      value: "123456789"
 
   envFrom:
     - secretRef:
@@ -132,7 +132,7 @@ database:
   # Isso usa 'emptyDir', que é rápido e limpa os dados automaticamente quando o Pod morre.
   # Evita criar discos órfãos no seu provedor de nuvem a cada teste.
   persistence:
-    enabled: false 
+    enabled: false
     type: emptyDir
     mountPath: /data/db
 
@@ -142,7 +142,7 @@ database:
 ingress:
   # Em testes de infra internos (curl no service), o Ingress muitas vezes pode ser desabilitado
   # a menos que você rode testes E2E externos.
-  enabled: false 
+  enabled: false
   className: nginx
   annotations: {}
   hosts:

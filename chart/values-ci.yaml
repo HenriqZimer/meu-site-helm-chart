@@ -19,7 +19,7 @@ secrets:
     MONGO_INITDB_ROOT_USERNAME: "ci-user"
     MONGO_INITDB_ROOT_PASSWORD: "ci-password"
     MONGO_INITDB_DATABASE: "portfolio_test"
-    MONGODB_URI: "mongodb://ci-user:ci-password@meu-site-frontend-database:27017/portfolio_test?authSource=admin"
+    MONGODB_URI: "mongodb://ci-user:ci-password@meu-site-database:27017/portfolio_test?authSource=admin"
 
 # -------------------------------------------------------------------------
 # FRONTEND CONFIG (CI)

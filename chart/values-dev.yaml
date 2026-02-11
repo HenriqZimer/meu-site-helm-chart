@@ -54,7 +54,7 @@ frontend:
     #   - GHCR: ghcr.io/username/myapp-frontend
     repository: docker.io/henriquezimermann/meu-site-frontend
     # -- Frontend container image tag
-    tag: "dev-3d1100bbcb"
+    tag: "dev-ad8cb4de2b"
     # -- Image pull policy (Always, IfNotPresent, or Never)
     pullPolicy: Always
   # -- Resources requests and limits for frontend container

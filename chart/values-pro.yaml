@@ -3,36 +3,27 @@
 
 # -- Number of old ReplicaSets to retain for rollback history
 revisionHistoryLimit: 3
-
 # -- Image pull secrets to authenticate with private repositories
 imagePullSecrets: []
-
 # -- Override the default name of the chart
 nameOverride: ""
 # -- Override the default full name of the chart
 fullnameOverride: ""
-
 # -- Annotations to add to the pod
 podAnnotations: {}
 # -- Additional labels to add to the pod
 podLabels: {}
-
 # -- Security context for the pod
 # Note: Component-level security contexts are configured per service
 podSecurityContext: {}
-
 # -- Security context for the container
 securityContext: {}
-
 # -- Node selector for pod scheduling
 nodeSelector: {}
-
 # -- Tolerations for pod scheduling
 tolerations: []
-
 # -- Affinity rules for pod scheduling
 affinity: {}
-
 # -- Secrets configuration
 # Two modes supported:
 # 1. Internal secrets (enabled: true) - Chart creates secrets from data below
@@ -50,12 +41,10 @@ secrets:
     MONGO_INITDB_ROOT_PASSWORD: "changeme"
     MONGO_INITDB_DATABASE: "myapp_db"
     MONGODB_URI: "mongodb://admin:changeme@database:27017/myapp_db?authSource=admin"
-
 # -- Frontend application configuration
 frontend:
   # -- Number of frontend replicas
   replicaCount: 1
-
   # -- Container image configuration
   image:
     # -- Container image repository for frontend
@@ -68,7 +57,6 @@ frontend:
     tag: "latest"
     # -- Image pull policy (Always, IfNotPresent, or Never)
     pullPolicy: Always
-
   # -- Resources requests and limits for frontend container
   resources:
     requests:
@@ -77,7 +65,6 @@ frontend:
     limits:
       cpu: 200m
       memory: 256Mi
-
   # -- Service configuration
   service:
     # -- Service type (ClusterIP, NodePort, or LoadBalancer)
@@ -90,14 +77,12 @@ frontend:
     annotations: {}
     # -- Labels for the service
     labels: {}
-
   # -- Additional environment variables for the container
   env:
     - name: TZ
       value: "America/Sao_Paulo"
     - name: NODE_ENV
       value: "production"
-
   # -- Security context for the frontend container
   securityContext:
     allowPrivilegeEscalation: false
@@ -108,17 +93,14 @@ frontend:
     runAsUser: 1000
     seccompProfile:
       type: RuntimeDefault
-
   # -- Load environment variables from ConfigMap or Secret
   envFrom: []
   #   - secretRef:
   #       name: frontend-credentials
-
 # -- Backend application configuration
 backend:
   # -- Number of backend replicas
   replicaCount: 1
-
   # -- Container image configuration
   image:
     # -- Container image repository for backend
@@ -128,10 +110,9 @@ backend:
     #   - GHCR: ghcr.io/username/myapp-backend
     repository: docker.io/henriquezimermann/meu-site-backend
     # -- Backend container image tag
-    tag: "latest"
+    tag: "v0.0.1"
     # -- Image pull policy (Always, IfNotPresent, or Never)
     pullPolicy: Always
-
   # -- Resources requests and limits for backend container
   resources:
     requests:
@@ -140,7 +121,6 @@ backend:
     limits:
       cpu: 200m
       memory: 256Mi
-
   # -- Service configuration
   service:
     # -- Service type (ClusterIP, NodePort, or LoadBalancer)
@@ -153,7 +133,6 @@ backend:
     annotations: {}
     # -- Labels for the service
     labels: {}
-
   # -- Additional environment variables for the container
   env:
     - name: TZ
@@ -168,7 +147,6 @@ backend:
       value: "587"
     - name: SMTP_SECURE
       value: "false"
-
   # -- Security context for the backend container
   securityContext:
     allowPrivilegeEscalation: false
@@ -179,7 +157,6 @@ backend:
     runAsUser: 1000
     seccompProfile:
       type: RuntimeDefault
-
   # -- Load environment variables from ConfigMap or Secret
   # Example for ExternalSecrets (set secrets.enabled: false):
   envFrom:
@@ -188,15 +165,12 @@ backend:
   #   - secretRef:
   #       name:
   #       name: meu-site-backend-credentials
-
 # -- MongoDB database configuration
 database:
   # -- Enable MongoDB deployment
   enabled: true
-
   # -- Number of database replicas (keep at 1 for single instance)
   replicaCount: 1
-
   # -- Container image configuration
   image:
     # -- Container image repository for MongoDB
@@ -205,12 +179,10 @@ database:
     tag: "latest"
     # -- Image pull policy (Always, IfNotPresent, or Never)
     pullPolicy: IfNotPresent
-
   # -- Command arguments for MongoDB
   args:
     - "--bind_ip"
     - "0.0.0.0"
-
   # -- Resources requests and limits for database container
   resources:
     requests:
@@ -219,7 +191,6 @@ database:
     limits:
       cpu: 500m
       memory: 512Mi
-
   # -- Service configuration
   service:
     # -- Service type (ClusterIP, NodePort, or LoadBalancer)
@@ -232,7 +203,6 @@ database:
     annotations: {}
     # -- Labels for the service
     labels: {}
-
   # -- Additional environment variables for the container
   env:
     - name: TZ
@@ -241,7 +211,6 @@ database:
       value: portfolio
     - name: MONGO_INITDB_ROOT_USERNAME
       value: portfolio
-
   # -- Security context for the database container
   securityContext:
     allowPrivilegeEscalation: false
@@ -252,13 +221,11 @@ database:
     runAsUser: 999
     seccompProfile:
       type: RuntimeDefault
-
   # -- Load environment variables from ConfigMap or Secret
   # This is where database credentials should be loaded from
   envFrom:
     - secretRef:
         name: meu-site-credentials
-
   # -- Database persistence
   persistence:
     # -- Enable persistent storage for database
@@ -281,7 +248,6 @@ database:
     existingClaim: ""
     # -- PVC name (only used when creating new PVC)
     pvcName: meu-site-mongodb-pvc
-
 # -- Ingress configuration
 ingress:
   # -- Enable ingress
@@ -312,12 +278,12 @@ ingress:
             service:
               name: meu-site-frontend
               port: 3000
-        # - path: /api
-        #   pathType: Prefix
-        #   backend:
-        #     service:
-        #       name: meu-site-backend
-        #       port: 5000
+              # - path: /api
+              #   pathType: Prefix
+              #   backend:
+              #     service:
+              #       name: meu-site-backend
+              #       port: 5000
     - host: api.henriqzimer.com.br
       paths:
         - path: /

@@ -70,7 +70,7 @@ frontend:
     repository: docker.io/henriquezimermann/meu-site-frontend
     # -- Frontend container image tag
 
-    tag: "latest"
+    tag: "dev-3d1100bbcb"
     # -- Image pull policy (Always, IfNotPresent, or Never)
 
     pullPolicy: Always

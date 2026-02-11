@@ -16,7 +16,7 @@ frontend:
 
   image:
     repository: harbor.henriqzimer.com.br/meu-site/frontend
-    tag: ""
+    tag: "ci"
     pullPolicy: IfNotPresent
 
   resources:
@@ -43,7 +43,7 @@ backend:
 
   image:
     repository: harbor.henriqzimer.com.br/meu-site/backend
-    tag: ""
+    tag: "ci"
     pullPolicy: IfNotPresent
 
   resources:

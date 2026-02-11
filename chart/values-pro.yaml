@@ -236,16 +236,16 @@ database:
     hostPath: ""
     # -- Mount path inside container
     mountPath: /data/db
-    # -- PVC specific settings
+  # -- PVC specific settings
     accessMode: ReadWriteOnce
     # -- Size of the persistent volume
     size: 8Gi
     # -- Custom annotations to be added to the PVC
     annotations: {}
-    # -- If undefined or set to null, no storageClassName spec is set
-    storageClass: ""
-    # -- Use an existing PVC for this mount
-    existingClaim: ""
+    # -- Storage class name for dynamic provisioning (leave empty for static PVC)
+    storageClass: "nfs-static"
+    # -- Use an existing PVC for this mount (leave empty to create new PVC)
+    existingClaim: "meu-site-mongodb-pvc"
     # -- PVC name (only used when creating new PVC)
     pvcName: meu-site-mongodb-pvc
 # -- Ingress configuration

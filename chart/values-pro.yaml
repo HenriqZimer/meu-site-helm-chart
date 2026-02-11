@@ -54,7 +54,7 @@ frontend:
     #   - GHCR: ghcr.io/username/myapp-frontend
     repository: docker.io/henriquezimermann/meu-site-frontend
     # -- Frontend container image tag
-    tag: "latest"
+    tag: "v0.0.1"
     # -- Image pull policy (Always, IfNotPresent, or Never)
     pullPolicy: Always
   # -- Resources requests and limits for frontend container
@@ -162,9 +162,9 @@ backend:
   envFrom:
     - secretRef:
         name: meu-site-credentials
-  #   - secretRef:
-  #       name:
-  #       name: meu-site-backend-credentials
+        #   - secretRef:
+        #       name:
+        #       name: meu-site-backend-credentials
 # -- MongoDB database configuration
 database:
   # -- Enable MongoDB deployment

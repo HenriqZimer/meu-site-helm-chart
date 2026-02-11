@@ -52,7 +52,7 @@ frontend:
     #   - Docker Hub: docker.io/username/myapp-frontend
     #   - Harbor: harbor.example.com/project/myapp-frontend
     #   - GHCR: ghcr.io/username/myapp-frontend
-    repository: docker.io/henriquezimermann/meu-site-frontend
+    repository: harbor.henriqzimer.com.br/meu-site/frontend
     # -- Frontend container image tag
     tag: "v0.0.1"
     # -- Image pull policy (Always, IfNotPresent, or Never)
@@ -108,7 +108,7 @@ backend:
     #   - Docker Hub: docker.io/username/myapp-backend
     #   - Harbor: harbor.example.com/project/myapp-backend
     #   - GHCR: ghcr.io/username/myapp-backend
-    repository: docker.io/henriquezimermann/meu-site-backend
+    repository: harbor.henriqzimer.com.br/meu-site/backend
     # -- Backend container image tag
     tag: "v0.0.1"
     # -- Image pull policy (Always, IfNotPresent, or Never)

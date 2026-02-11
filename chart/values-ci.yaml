@@ -1,38 +1,24 @@
-# -------------------------------------------------------------------------
-# VALUES PARA AMBIENTE DE CI/TESTES (Pipeline)
-# Otimizado para execução rápida, baixo consumo e dados voláteis.
-# -------------------------------------------------------------------------
-
 nameOverride: ""
 fullnameOverride: ""
 
-# Em CI, não precisamos de histórico de rollback extenso
 revisionHistoryLimit: 1
 
-# Segredos geralmente não são criados via Helm no CI se já existirem no Namespace
-# ou usamos valores default para testes não sensíveis.
 secrets:
   enabled: true
   name: meu-site-credentials-ci
   data:
-    # Credenciais padrão para ambiente de teste (não usar em PROD!)
     MONGO_INITDB_ROOT_USERNAME: "ci-user"
     MONGO_INITDB_ROOT_PASSWORD: "ci-password"
     MONGO_INITDB_DATABASE: "portfolio"
     MONGODB_URI: "mongodb://ci-user:ci-password@meu-site-database:27017/portfolio?authSource=admin"
 
-# -------------------------------------------------------------------------
-# FRONTEND CONFIG (CI)
-# -------------------------------------------------------------------------
 frontend:
-  replicaCount: 1 # Apenas 1 réplica para economizar recursos no cluster de teste
 
   image:
-    repository: docker.io/henriquezimermann/meu-site-frontend
-    tag: "latest" # Será sobrescrito pelo pipeline do Jenkins
+    repository: harbor.henriqzimer.com.br/meu-site/frontend
+    tag: "latest"
     pullPolicy: IfNotPresent
 
-  # Recursos mínimos para rodar os testes
   resources:
     requests:
       cpu: 50m
@@ -50,17 +36,14 @@ frontend:
     - name: TZ
       value: "America/Sao_Paulo"
     - name: NODE_ENV
-      value: "test" # Importante para a aplicação saber que está em teste
+      value: "test"
 
-# -------------------------------------------------------------------------
-# BACKEND CONFIG (CI)
-# -------------------------------------------------------------------------
 backend:
   replicaCount: 1
 
   image:
-    repository: docker.io/henriquezimermann/meu-site-backend
-    tag: "latest" # Será sobrescrito pelo pipeline do Jenkins
+    repository: harbor.henriqzimer.com.br/meu-site/backend
+    tag: "latest"
     pullPolicy: IfNotPresent
 
   resources:
@@ -81,7 +64,6 @@ backend:
       value: "America/Sao_Paulo"
     - name: NODE_ENV
       value: "test"
-    # Configurações de Email/Rate Limit relaxadas para teste
     - name: RATE_LIMIT_TTL
       value: "60"
     - name: RATE_LIMIT_MAX
@@ -92,10 +74,6 @@ backend:
   envFrom:
     - secretRef:
         name: meu-site-credentials-ci
-
-# -------------------------------------------------------------------------
-# DATABASE CONFIG (CI)
-# -------------------------------------------------------------------------
 database:
   enabled: true
   replicaCount: 1
@@ -128,20 +106,12 @@ database:
     - secretRef:
         name: meu-site-credentials-ci
 
-  # IMPORTANTE PARA CI: Desabilitar persistência (PVC)
-  # Isso usa 'emptyDir', que é rápido e limpa os dados automaticamente quando o Pod morre.
-  # Evita criar discos órfãos no seu provedor de nuvem a cada teste.
   persistence:
     enabled: false
     type: emptyDir
     mountPath: /data/db
 
-# -------------------------------------------------------------------------
-# INGRESS CONFIG (CI)
-# -------------------------------------------------------------------------
 ingress:
-  # Em testes de infra internos (curl no service), o Ingress muitas vezes pode ser desabilitado
-  # a menos que você rode testes E2E externos.
   enabled: false
   className: nginx
   annotations: {}

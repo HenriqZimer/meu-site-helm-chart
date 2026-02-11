@@ -54,7 +54,7 @@ frontend:
     #   - GHCR: ghcr.io/username/myapp-frontend
     repository: harbor.henriquezimer.com.br/meu-site/frontend
     # -- Frontend container image tag
-    tag: "stg-ad8cb4de2b"
+    tag: "v0.0.1-ad8cb4de2b"
     # -- Image pull policy (Always, IfNotPresent, or Never)
     pullPolicy: Always
   # -- Resources requests and limits for frontend container

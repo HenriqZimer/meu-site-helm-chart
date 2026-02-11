@@ -18,8 +18,8 @@ secrets:
     # Credenciais padrão para ambiente de teste (não usar em PROD!)
     MONGO_INITDB_ROOT_USERNAME: "ci-user"
     MONGO_INITDB_ROOT_PASSWORD: "ci-password"
-    MONGO_INITDB_DATABASE: "portfolio_test"
-    MONGODB_URI: "mongodb://ci-user:ci-password@meu-site-database:27017/portfolio_test?authSource=admin"
+    MONGO_INITDB_DATABASE: "portfolio"
+    MONGODB_URI: "mongodb://ci-user:ci-password@meu-site-database:27017/portfolio?authSource=admin"
 
 # -------------------------------------------------------------------------
 # FRONTEND CONFIG (CI)

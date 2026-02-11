@@ -36,10 +36,10 @@ secrets:
   # When using ExternalSecrets, set enabled: false and use envFrom to load secrets
   # IMPORTANT: Change these values before using in production!
   data:
-    MONGO_INITDB_ROOT_USERNAME: "dev-user"
-    MONGO_INITDB_ROOT_PASSWORD: "dev-password"
+    MONGO_INITDB_ROOT_USERNAME: "stg-user"
+    MONGO_INITDB_ROOT_PASSWORD: "stg-password"
     MONGO_INITDB_DATABASE: "portfolio"
-    MONGODB_URI: "mongodb://dev-user:dev-password@meu-site-database:27017/portfolio?authSource=admin"
+    MONGODB_URI: "mongodb://stg-user:stg-password@meu-site-database:27017/portfolio?authSource=admin"
     JWT_SECRET: "123456789"
 # -- Frontend application configuration
 frontend:
@@ -54,7 +54,7 @@ frontend:
     #   - GHCR: ghcr.io/username/myapp-frontend
     repository: harbor.henriquezimer.com.br/meu-site/frontend
     # -- Frontend container image tag
-    tag: "dev-ad8cb4de2b"
+    tag: "stg-ad8cb4de2b"
     # -- Image pull policy (Always, IfNotPresent, or Never)
     pullPolicy: Always
   # -- Resources requests and limits for frontend container
@@ -110,7 +110,7 @@ backend:
     #   - GHCR: ghcr.io/username/myapp-backend
     repository: harbor.henriquezimer.com.br/meu-site/backend
     # -- Backend container image tag
-    tag: "dev-0925b7e4f4"
+    tag: "stg-0925b7e4f4"
     # -- Image pull policy (Always, IfNotPresent, or Never)
     pullPolicy: Always
   # -- Resources requests and limits for backend container
@@ -210,7 +210,7 @@ database:
     - name: MONGO_INITDB_DATABASE
       value: portfolio
     - name: MONGO_INITDB_ROOT_USERNAME
-      value: portfolio
+      value: stg-user
   # -- Security context for the database container
   securityContext:
     allowPrivilegeEscalation: false
@@ -270,7 +270,7 @@ ingress:
   # nginx.ingress.kubernetes.io/ssl-redirect: "true"
   # -- Ingress hosts and paths
   hosts:
-    - host: dev-henriqzimer.com.br
+    - host: stg-henriqzimer.com.br
       paths:
         - path: /
           pathType: Prefix
@@ -279,7 +279,7 @@ ingress:
               name: meu-site-frontend
               port: 3000
               # - path: /api
-    - host: dev-api.henriqzimer.com.br
+    - host: stg-api.henriqzimer.com.br
       #   pathType: Prefix
       #   backend:
       #     service:
@@ -296,5 +296,5 @@ ingress:
   tls:
     - secretName: wildcard-henriqzimer-tls
       hosts:
-        - dev-henriqzimer.com.br
-        - dev-api.henriqzimer.com.br
+        - stg-henriqzimer.com.br
+        - stg-api.henriqzimer.com.br

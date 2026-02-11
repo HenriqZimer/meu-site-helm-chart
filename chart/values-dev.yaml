@@ -210,7 +210,7 @@ database:
     - name: MONGO_INITDB_DATABASE
       value: portfolio
     - name: MONGO_INITDB_ROOT_USERNAME
-      value: portfolio
+      value: dev-user
   # -- Security context for the database container
   securityContext:
     allowPrivilegeEscalation: false

@@ -82,7 +82,7 @@ frontend:
     - name: TZ
       value: "America/Sao_Paulo"
     - name: NODE_ENV
-      value: "development"
+      value: "staging"
   # -- Security context for the frontend container
   securityContext:
     allowPrivilegeEscalation: false
@@ -138,7 +138,7 @@ backend:
     - name: TZ
       value: "America/Sao_Paulo"
     - name: NODE_ENV
-      value: "development"
+      value: "staging"
     - name: RATE_LIMIT_TTL
       value: "60"
     - name: RATE_LIMIT_MAX

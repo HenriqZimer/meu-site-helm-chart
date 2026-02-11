@@ -270,7 +270,7 @@ ingress:
   # nginx.ingress.kubernetes.io/ssl-redirect: "true"
   # -- Ingress hosts and paths
   hosts:
-    - host: dev-henriqzimer.com.br
+    - host: dev.henriqzimer.com.br
       paths:
         - path: /
           pathType: Prefix
@@ -296,5 +296,5 @@ ingress:
   tls:
     - secretName: wildcard-henriqzimer-tls
       hosts:
-        - dev-henriqzimer.com.br
+        - dev.henriqzimer.com.br
         - dev-api.henriqzimer.com.br

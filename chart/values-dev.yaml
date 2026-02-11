@@ -195,7 +195,7 @@ backend:
   envFrom:
     - secretRef:
         name: meu-site-credentials
-  #   - secretRef:
+        #   - secretRef:
 #       name:
 
 #       name: meu-site-backend-credentials
@@ -333,7 +333,7 @@ ingress:
             service:
               name: meu-site-frontend
               port: 3000
-      # - path: /api
+              # - path: /api
     - host: dev-api.henriqzimer.com.br
       #   pathType: Prefix
 
@@ -344,7 +344,6 @@ ingress:
       #       name: meu-site-backend
 
       #       port: 5000
-
       paths:
         - path: /
           pathType: Prefix

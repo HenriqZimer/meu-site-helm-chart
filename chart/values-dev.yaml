@@ -110,7 +110,7 @@ backend:
     #   - GHCR: ghcr.io/username/myapp-backend
     repository: docker.io/henriquezimermann/meu-site-backend
     # -- Backend container image tag
-    tag: "latest"
+    tag: "dev-0925b7e4f4"
     # -- Image pull policy (Always, IfNotPresent, or Never)
     pullPolicy: Always
   # -- Resources requests and limits for backend container
